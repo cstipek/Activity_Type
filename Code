@@ -1,0 +1,45 @@
+##New Script - which activity type is most expensive
+import pandas as pd
+import matplotlib.pyplot as plt
+
+budget = pd.read_csv('OCNR.csv', usecols = ['PO_ID', 'PO_BU', 'PO_Qty', 'Price', 'Activity_Type'])
+print(budget.shape)
+print(budget.columns)
+print(budget.head())
+
+
+#We want to see which PO_ID's start with the str NNWR....
+budget[budget.PO_ID.str.contains('NNWR')]
+#Can also use line below but it will return boolean
+budget.PO_ID.str.contains('NNWR')
+
+#Want to take a look at the mean for the budget costs but need to remove the cells where it is less than $1.00(a placeholder)
+budget_up = budget[budget.PO_Qty>1.00]
+
+#DBL check to make sure it removed the placeholder values
+budget_up.PO_Qty.sort_values()
+
+#Now lets take a look at the mean and see what is going on
+budget_up.PO_Qty.mean()
+
+#Now that we have the correct PO quantities / costs, we can group by the specific activity
+budget_up.groupby('Activity_Type').PO_Qty.mean()
+#Can also use aggregate
+budget_up.groupby('Activity_Type').PO_Qty.agg(['count','min','max','mean'])
+
+#Since we can see that Construction has the highest mean, lets dive deeper into it, find the max and min of Construction values
+constr = budget_up[budget_up.Activity_Type=='CNSER']
+
+constr.PO_Qty.sort_values()
+#Take a look at the min, max, etc.
+constr.PO_Qty.describe()
+
+#Plot out the findings for construction
+n, bins, patches = plt.hist(x=constr.PO_Qty, bins='auto', color='#0504aa', alpha=0.7, rwidth=0.85)
+plt.grid(axis='y', alpha=0.75)
+plt.ylabel('Frequency')
+plt.xlabel('PO Cost')
+plt.title('Histogram of Construction POs')
+plt.text(23, 45, r'$\mu=15, b=3$')
+maxfreq=n.max()
+plt.show()
