@@ -43,3 +43,7 @@ plt.title('Histogram of Construction POs')
 plt.text(23, 45, r'$\mu=15, b=3$')
 maxfreq=n.max()
 plt.show()
+
+#Can also make a plot of the activity types - bar chart of the value counts based on activities
+budget.Activity_Type.value_counts().plot(kind='bar')
+
